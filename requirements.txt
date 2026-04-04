@@ -1,5 +1,6 @@
 streamlit
+google-generativeai
 pandas
 folium
-google-generativeai
-streamlit-folium
+streamlit-lottie
+
