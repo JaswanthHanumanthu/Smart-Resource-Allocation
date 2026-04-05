@@ -8,20 +8,36 @@ The platform handles unstructured mission data (messy notes, audio, photos) and 
 
 ```mermaid
 graph TD
-    A[User Input: Notes/Photos/Audio] --> B[Streamlit UI]
-    B --> C{Gemini 1.5 Flash AI}
-    C -->|Multimodal Extraction| D[Structured JSON Schema]
-    D --> E[Data Processing Layer & Validation]
-    E --> F[In-Memory Session Database]
-    F --> G[Interactive Folium Map Visualization]
-    F --> H[Executive Impact Analytics]
-    F --> I[AI Matching Engine & Dispatch]
+    subgraph "Field Ingestion (Multi-Modal)"
+        A[Handwritten Surveys / Messy Notes] --> SCAN[AI Document Scanner (Gemini OCR)]
+        B[Field Photos / Scenery] --> IMAGE[Situational Vision Extraction]
+        C[Voice Memos / Radio Traffic] --> AUDIO[Audio Analysis & Transcription]
+    end
+    
+    SCAN & IMAGE & AUDIO -->|Structured JSON| TRIAGE[AI Triage & PII Anonymizer]
+    TRIAGE -->|Verified Data| CORE[(Mission-Critical Database)]
+    
+    subgraph "Operational Intelligence"
+        CORE --> MAP[Interactive Impact Map & Heatmaps]
+        CORE --> INDEX[Executive Urgency Index (Crisis Scoring)]
+        CORE --> ANALYTICS[Tactical Fairness & Bias Audit]
+    end
+    
+    subgraph "Tactical Dispatch"
+        CORE --> MATCH[Skills-First Matching Engine]
+        MATCH -->|Confidence Score + XAI| VOL[Volunteer Force Deployment]
+    end
+    
+    subgraph "Security & Continuity"
+        CORE --> SYNC[Cloud Terminal Sync & Offline Caching]
+        SECURE[Enterprise-Grade Encryption Layer]
+    end
 ```
 
-1.  **Ingestion (UI)**: Field reports are uploaded via the "Data Upload" portal.
+1.  **Ingestion (UI)**: Field reports are uploaded via the **Field Report Center**.
 2.  **Multimodal Analysis (Gemini)**: Raw data is sent to **Gemini 1.5 Flash**. The AI performs OCR, translation, and sentiment analysis to extract urgency, category, and coordinates.
-3.  **Refinement (Processing)**: Extracted data is validated in a "Review Queue" before entering the mission-critical database.
-4.  **Operationalization (Visuals/Matching)**: Data is dynamically rendered on a **Folium Heatmap** and passed to a **Heuristic + AI Matching Engine** to pair volunteers with tasks.
+3.  **Refinement (Processing)**: Extracted data is validated in a **Review Queue** and anonymized before entering the mission-critical database.
+4.  **Operationalization (Visuals/Matching)**: Data is dynamically rendered on an **Interactive Heatmap** and passed to a **Skills-First Matching Engine** to pair expert volunteers with high-urgency tasks.
 
 ---
 

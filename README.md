@@ -78,9 +78,34 @@ streamlit run app.py
 ---
 
 ## 📐 System Architecture
-The platform utilizes a **Three-Stage Verification Pipeline**:
-1.  **RAW_INPUT**: Unstructured field notes (Text/Image/Audio) are ingested.
-2.  **AI_TRIAGE**: Gemini performs PII redaction and 'Truth Checks'.
+
+The platform utilizes a multi-modal, privacy-first ingestion and dispatch pipeline:
+
+```mermaid
+graph TD
+    subgraph "Field Ingestion (Multi-Modal)"
+        A[Handwritten Surveys / Messy Notes] --> SCAN[AI Document Scanner (Gemini OCR)]
+        B[Field Photos / Scenery] --> IMAGE[Situational Vision Extraction]
+        C[Voice Memos / Radio Traffic] --> AUDIO[Audio Analysis & Transcription]
+    end
+    
+    SCAN & IMAGE & AUDIO -->|Structured JSON| TRIAGE[AI Triage & PII Anonymizer]
+    TRIAGE -->|Verified Data| CORE[(Mission-Critical Database)]
+    
+    subgraph "Operational Intelligence"
+        CORE --> MAP[Interactive Impact Map & Heatmaps]
+        CORE --> INDEX[Executive Urgency Index (Crisis Scoring)]
+        CORE --> ANALYTICS[Tactical Fairness & Bias Audit]
+    end
+    
+    subgraph "Tactical Dispatch"
+        CORE --> MATCH[Skills-First Matching Engine]
+        MATCH -->|Confidence Score + XAI| VOLUNTEER[Volunteer Force Deployment]
+    end
+```
+
+1.  **RAW_INPUT**: Unstructured field notes (Text/Image/Audio) are ingested via the **Field Report Center**.
+2.  **AI_TRIAGE**: Gemini performs PII redaction, situational extraction, and 'Truth Checks'.
 3.  **VERIFIED_DATA**: Human administrators authenticate reports before they impact live metrics.
 
 For more technical details, see [ARCHITECTURE.md](ARCHITECTURE.md).
