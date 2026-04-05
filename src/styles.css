@@ -2,8 +2,9 @@
 
 /* --- Theme-Agnostic Foundation --- */
 :root {
-    --brand-primary: #6366f1; /* Vibrant Indigo */
-    --brand-glow: rgba(99, 102, 241, 0.4);
+    --brand-primary: #4285F4; /* Google Blue */
+    --brand-glow: rgba(66, 133, 244, 0.4);
+    --brand-success: #34A853; /* NGO Green */
     
     /* Premium Light Mode (Default) */
     --surface-elevation-1: #F9FAFB; /* Soft Off-White Background */
@@ -17,13 +18,18 @@
     --impact-orange: #E69F00; /* Orange */
     --impact-green: #009E73; /* Bluish Green */
     
-    --radius-standard: 12px;
-    --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --radius-standard: 16px;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    
+    /* Neon Glows (Color-blind Safe Okabe-Ito 기반) */
+    --glow-red: 0 0 15px rgba(213, 94, 0, 0.4);
+    --glow-orange: 0 0 15px rgba(230, 159, 0, 0.4);
+    --glow-green: 0 0 15px rgba(0, 158, 115, 0.4);
     
     /* Glassmorphism Defaults */
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --glass-blur: 15px;
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-blur: 12px;
 }
 
 /* --- Dark Mode Detection (Streamlit specific or OS) --- */
@@ -56,6 +62,12 @@ html, body, [data-testid="stAppViewContainer"] {
     line-height: 1.6 !important;
     background-color: var(--surface-elevation-1) !important;
     color: var(--text-medium-contrast) !important;
+    animation: fade-in 1s ease-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
@@ -85,13 +97,18 @@ div[data-testid="stVerticalBlock"] > div[style*="border"],
     border-radius: var(--radius-standard);
     padding: 1.5rem;
     box-shadow: var(--shadow-soft);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: 1rem;
+    animation: fade-in 0.8s ease-out backwards;
 }
 
+.card-critical { border-color: var(--impact-red) !important; box-shadow: var(--glow-red) !important; }
+.card-warning { border-color: var(--impact-orange) !important; box-shadow: var(--glow-orange) !important; }
+.card-safe { border-color: var(--impact-green) !important; box-shadow: var(--glow-green) !important; }
+
 .high-end-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
 
 /* --- Impact Palette Enhancements --- */
@@ -141,7 +158,7 @@ div[data-testid="stVerticalBlock"] > div[style*="border"],
 }
 
 .stButton > button:hover {
-    background-color: #4f46e5 !important;
+    background-color: #3367D6 !important; /* Darker Google Blue */
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
 }
@@ -174,12 +191,72 @@ div[data-testid="stVerticalBlock"] > div[style*="border"],
     margin-bottom: -0.5rem !important;
 }
 
-/* --- Streamlit Overrides for Cleanliness --- */
-[data-testid="stSidebar"] {
-    background-color: var(--glass-bg) !important;
-    backdrop-filter: blur(var(--glass-blur)) !important;
-    -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
-    border-right: 1px solid var(--glass-border) !important;
+/* --- Light Mode Contrast Overrides (AAA Accessibility) --- */
+@media (prefers-color-scheme: light) {
+    [data-testid="stAppViewContainer"] {
+        color: #1E293B !important;
+    }
+    .stMarkdown, .stSubheader, .stHeader, h1, h2, h3, h4, h5, h6 {
+        color: #1E293B !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: #1E293B !important;
+    }
+}
+
+/* --- Situational Mission Animations --- */
+@keyframes pulse-urgent {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes glow-stable {
+    0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
+}
+
+.card-critical {
+    animation: pulse-urgent 2s infinite !important;
+    border: 2px solid var(--impact-red) !important;
+}
+
+.card-safe {
+    animation: glow-stable 3s infinite !important;
+    border: 1px solid var(--impact-green) !important;
+}
+
+/* --- Pulse Ticker Footer --- */
+.ticker-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: #FFFFFF;
+    padding: 12px 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    z-index: 9999;
+    border-top: 3px solid var(--brand-primary);
+    border-bottom: 3px solid var(--brand-success);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ticker-wrap {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker-move 35s linear infinite;
+}
+
+@keyframes ticker-move {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
 }
 
 [data-testid="stHeader"] {

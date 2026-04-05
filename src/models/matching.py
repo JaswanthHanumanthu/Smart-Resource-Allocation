@@ -18,35 +18,48 @@ def match_volunteer_to_needs(volunteer: dict, needs_df: pd.DataFrame, top_n: int
         
     df = needs_df.copy()
     
-    # 1. Skill Match Scoring (Heuristic for initial ranking)
+    # 1. Skills-First Logical Scoring
     def rank_skill(category, skills):
         skills = [s.lower() for s in skills]
-        if category == "Medical" and any(s in ["doctor", "nurse", "medic"] for s in skills):
-            return 2.0
-        elif category == "Food" and any(s in ["driver", "general", "cook", "logistics"] for s in skills):
-            return 1.5
-        elif category == "Shelter" and any(s in ["builder", "general", "driver"] for s in skills):
-            return 1.5
+        # Direct Mapping for Tactical Excellence
+        skill_map = {
+            "Medical": ["medical", "first aid", "doctor", "nurse", "medic", "paramedic"],
+            "Food": ["logistics", "driving", "delivery", "cook", "food distribution"],
+            "Shelter": ["logistics", "building", "construction", "shelter management"],
+            "General": ["language", "teaching", "counseling", "translation", "general"]
+        }
+        
+        relevant_skills = skill_map.get(category, ["general"])
+        if any(s in relevant_skills for s in skills):
+            return 5.0 # Elite match for direct capability
         elif "general" in skills:
-            return 1.0
-        return 0.5
+            return 1.0 # Secondary generalist support
+        return 0.1 # Minimal capability match
         
     df["skill_score"] = df["category"].apply(lambda cat: rank_skill(cat, volunteer["skills"]))
     
-    # 2. Proximity Scoring
-    df["distance"] = df.apply(
-        lambda row: calculate_distance(volunteer["latitude"], volunteer["longitude"], row["latitude"], row["longitude"]), 
+    # 2. Tactical Proximity (5km Optimized)
+    df["distance_km"] = df.apply(
+        lambda row: calculate_distance(volunteer["latitude"], volunteer["longitude"], row["latitude"], row["longitude"]) * 111.0, 
         axis=1
     )
-    max_dist = df["distance"].max() if df["distance"].max() > 0 else 1
-    df["proximity_score"] = 1.0 - (df["distance"] / max_dist)
     
-    # 3. Overall Weighted Matching Score (out of 10 for initially sorting)
-    df["urgency_norm"] = df["urgency"] / 10.0
+    # 5km Radius Logic: High priority inside, heavy decay outside
+    def score_proximity(dist):
+        if dist <= 5.0:
+            return 4.0 # Tactical Excellence (within 5km)
+        elif dist <= 15.0:
+            return 1.5 # Secondary Tier
+        return 0.2 # Logistical Strain
+        
+    df["proximity_score"] = df["distance_km"].apply(score_proximity)
+    
+    # 3. Enhanced Skills-First Match Score
+    # Weights: Skill (50%) + Proximity (30%) + Urgency (20%)
     df["match_score"] = (
-        (df["urgency_norm"] * 5.0) +
-        (df["skill_score"] / 2.0 * 3.0) +
-        (df["proximity_score"] * 2.0)
+        (df["skill_score"] / 5.0 * 5.0) +
+        (df["proximity_score"]) +
+        (df["urgency"] / 10.0 * 2.0)
     )
     
     # Sort by heuristic match score and take top_n

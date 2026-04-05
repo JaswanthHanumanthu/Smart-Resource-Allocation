@@ -65,3 +65,17 @@ def check_anomaly(latitude: float, longitude: float, df: pd.DataFrame, threshold
     total_count = nearby['report_count'].sum() if 'report_count' in nearby.columns else len(nearby)
     
     return total_count >= threshold
+
+def anonymize_report_data(text: str) -> str:
+    """
+    Masks PII like personal names and specific door-step addresses (e.g. '123 Main St')
+    to ensure community privacy in humanitarian situational reports.
+    """
+    import re
+    # Mask street addresses and house numbers
+    text = re.sub(r'\b\d{1,4}\s[A-Z][a-z]+( Street| St| Ave| Road| Rd| Lane| Ln| Blvd| Way)\b', '[STREET ADDRESS REDACTED]', text)
+    # Mask specific house numbers at start of strings
+    text = re.sub(r'^\d{1,5}\s', '[HOUSE NUMBER REDACTED] ', text)
+    # Redact common Title + Name structures (Simple NGO Prototype)
+    text = re.sub(r'(Mr\.|Mrs\.|Ms\.|Dr\.)\s[A-Z][a-z]+', '[NAME REDACTED]', text)
+    return text
