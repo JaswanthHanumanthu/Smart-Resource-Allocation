@@ -392,6 +392,64 @@ div.stFoliumContainer {
 }
 
 /* ============================================================
+   SMOOTH SCROLLING
+   ============================================================ */
+html {
+    scroll-behavior: smooth !important;
+}
+
+/* ============================================================
+   SKELETON LOADER — shimmer while AI processes
+   ============================================================ */
+.skeleton-block {
+    background: linear-gradient(
+        90deg,
+        rgba(30, 41, 59, 0.9) 25%,
+        rgba(66, 133, 244, 0.18) 50%,
+        rgba(30, 41, 59, 0.9) 75%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+@keyframes shimmer {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+.skeleton-label {
+    color: var(--brand-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skeleton-label::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand-primary);
+    animation: pulse-brand 1s infinite;
+}
+
+/* ============================================================
+   MAP PULSE ANIMATION (used in Folium DivIcon)
+   ============================================================ */
+@keyframes map-pulse {
+    0%   { transform: scale(0.7); opacity: 1; }
+    100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* ============================================================
    SCROLLBAR
    ============================================================ */
 ::-webkit-scrollbar       { width: 6px; }

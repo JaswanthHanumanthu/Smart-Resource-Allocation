@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
+import contextlib
 
 # --- 🔐 Enterprise-Grade Security: API Configuration ---
 import os
@@ -11,6 +12,28 @@ except Exception:
 
 if _api_key:
     genai.configure(api_key=_api_key)
+
+@contextlib.contextmanager
+def skeleton_spinner(label="AI Processing...", n_blocks=3, heights=None):
+    """Context manager: shows shimmering skeleton blocks while AI runs, then clears."""
+    if heights is None:
+        heights = [56, 40, 40]
+    blocks_html = "".join(
+        f'<div class="skeleton-block" style="height:{heights[i % len(heights)]}px;"></div>'
+        for i in range(n_blocks)
+    )
+    placeholder = st.empty()
+    placeholder.markdown(f"""
+        <div style="padding:16px 20px; background:rgba(15,23,42,0.6); border-radius:14px; border:1px solid rgba(66,133,244,0.2);">
+            <div class="skeleton-label">⚡ {label}</div>
+            {blocks_html}
+        </div>
+    """, unsafe_allow_html=True)
+    try:
+        yield placeholder
+    finally:
+        placeholder.empty()
+
 
 def run_dashboard():
     # Refined Interface Infrastructure
@@ -768,7 +791,7 @@ def run_dashboard():
             elif ext in ['pdf', 'txt']:
                 import pypdf
                 from src.processor import process_ngo_notes
-                with st.spinner("Extracting parameters from document via Gemini..."):
+                with skeleton_spinner("Gemini AI Extracting Report Parameters...", n_blocks=4, heights=[52, 36, 36, 36]):
                     text = uploaded_file.getvalue().decode('utf-8') if ext == 'txt' else " ".join([p.extract_text() for p in pypdf.PdfReader(uploaded_file).pages])
                     res = process_ngo_notes(text)
                     if "error" not in res: df = pd.DataFrame([{k:v for k,v in res.items() if k != 'note'}])
@@ -1117,16 +1140,46 @@ def run_dashboard():
                     ).add_to(m)
                     
                     if index in top_3_critical_ids:
-                        folium.CircleMarker(
-                            location=[row["latitude"], row["longitude"]],
-                            radius=25,
-                            color="red",
-                            fill=True,
-                            fill_color="red",
-                            fill_opacity=0.3,
-                            popup="🚨 TOP CRITICAL NEED",
-                            tooltip="Critical Priority"
-                        ).add_to(m)
+                        is_number_one = (index == top_3_critical_ids[0])
+                        if is_number_one:
+                            # --- PULSE EFFECT: animated ripple rings on #1 critical pin ---
+                            pulse_html = """
+                                <div style="position:relative;width:60px;height:60px;display:flex;align-items:center;justify-content:center;">
+                                    <div style="position:absolute;width:56px;height:56px;border-radius:50%;
+                                         background:rgba(244,63,94,0.25);
+                                         animation:map-pulse 1.5s ease-out infinite;"></div>
+                                    <div style="position:absolute;width:38px;height:38px;border-radius:50%;
+                                         background:rgba(244,63,94,0.45);
+                                         animation:map-pulse 1.5s ease-out 0.5s infinite;"></div>
+                                    <div style="width:18px;height:18px;border-radius:50%;
+                                         background:#f43f5e;border:3px solid white;
+                                         box-shadow:0 0 12px rgba(244,63,94,0.9);
+                                         position:relative;z-index:10;"></div>
+                                </div>
+                                <style>
+                                @keyframes map-pulse {
+                                    0%  {transform:scale(0.6);opacity:1;}
+                                    100%{transform:scale(2.6);opacity:0;}
+                                }
+                                </style>
+                            """
+                            folium.Marker(
+                                location=[row["latitude"], row["longitude"]],
+                                popup=folium.Popup("🚨 #1 CRITICAL — Dispatch Immediately", max_width=240),
+                                tooltip="🚨 HIGHEST URGENCY — Dispatcher Alert",
+                                icon=folium.DivIcon(html=pulse_html, icon_size=(60, 60), icon_anchor=(30, 30))
+                            ).add_to(m)
+                        else:
+                            folium.CircleMarker(
+                                location=[row["latitude"], row["longitude"]],
+                                radius=22,
+                                color="red",
+                                fill=True,
+                                fill_color="red",
+                                fill_opacity=0.25,
+                                popup="🚨 TOP CRITICAL NEED",
+                                tooltip="Critical Priority"
+                            ).add_to(m)
                         popup_text = f"🚨 <b>TOP CRITICAL PRIORITY</b><br>" + popup_text
                     
                     folium.Marker(
@@ -1137,7 +1190,7 @@ def run_dashboard():
                     
                 # --- AI Crisis Prediction Zones ---
                 needs_list = filtered_df.to_dict(orient='records')
-                with st.spinner("🔮 AI scanning for predicted crisis clusters..."):
+                with skeleton_spinner("Gemini AI Predicting Crisis Clusters...", n_blocks=3, heights=[48, 32, 32]):
                     try:
                         predictions = predict_crisis_clusters(needs_list)
                     except Exception:
@@ -1441,7 +1494,7 @@ def run_dashboard():
             if st.session_state.get('show_action_plan') == actual_name:
                 from src.models.matching import match_volunteer_to_needs
                 
-                with st.spinner("Calculating optimal routing and skill matrix..."):
+                with skeleton_spinner("AI Matching Volunteers to Missions...", n_blocks=5, heights=[44, 32, 32, 32, 44]):
                     # Only match on Pending tasks
                     available_needs = needs_df[needs_df['status'] == 'Pending']
                     
@@ -1496,7 +1549,7 @@ def run_dashboard():
                                     from src.utils.logger import log_event
                                     # In a real app we'd update DB
                                     st.balloons()
-                                    st.toast("Task Force Deployed Successfully!", icon="✅")
+                                    st.toast(f"🚀 Task Force Deployed! Squad assigned to {top_task['category']} — Urgency {top_task['urgency']}/10", icon="✅")
                                     log_event("MATCH_CREATED", f"Multi-person squad assigned to mission Cluster #{top_task.name}")
                             
                             st.markdown("---")
@@ -1521,9 +1574,9 @@ def run_dashboard():
                                     
                                     st.caption(f"Algorithmic Readiness Score: {row['match_score']:.2f}/10.0 | Distance: {dist_km:.1f}km | **Estimated Travel Time: {eta_str}**")
                                     
-                                    def update_status_closure(idx=original_idx):
+                                    def update_status_closure(idx=original_idx, cat=row['category'], urg=row['urgency'], vol=actual_name):
                                         st.session_state['needs_df'].at[idx, 'status'] = 'Matched'
-                                        st.toast("Task status updated to Matched.", icon="🔄")
+                                        st.toast(f"✅ Match Confirmed — {vol} dispatched to {cat} (Urgency {urg}/10)", icon="🚀")
                                         
                                     st.button(f"Confirm & Dispatch", key=f"btn_{original_idx}", on_click=update_status_closure)
                             
@@ -1669,7 +1722,7 @@ Every decision is **explainable, auditable, and bias-aware** — not a black box
             if st.session_state.get('show_action_plan') == actual_name:
                 from src.models.matching import match_volunteer_to_needs
                 
-                with st.spinner("Calculating optimal routing and skill matrix..."):
+                with skeleton_spinner("AI Matching Volunteers to Missions...", n_blocks=5, heights=[44, 32, 32, 32, 44]):
                     # Only match on Pending tasks
                     available_needs = needs_df[needs_df['status'] == 'Pending']
                     
@@ -1724,7 +1777,7 @@ Every decision is **explainable, auditable, and bias-aware** — not a black box
                                     from src.utils.logger import log_event
                                     # In a real app we'd update DB
                                     st.balloons()
-                                    st.toast("Task Force Deployed Successfully!", icon="✅")
+                                    st.toast(f"🚀 Task Force Deployed! Squad assigned to {top_task['category']} — Urgency {top_task['urgency']}/10", icon="✅")
                                     log_event("MATCH_CREATED", f"Multi-person squad assigned to mission Cluster #{top_task.name}")
                             
                             st.markdown("---")
@@ -1754,9 +1807,9 @@ Every decision is **explainable, auditable, and bias-aware** — not a black box
                                     
                                     st.caption(f"Algorithmic Readiness Score: {row['match_score']:.2f}/10.0 | Distance: {dist_km:.1f}km | **Estimated Travel Time: {eta_str}**")
                                     
-                                    def update_status_closure(idx=original_idx):
+                                    def update_status_closure(idx=original_idx, cat=row['category'], urg=row['urgency'], vol=actual_name):
                                         st.session_state['needs_df'].at[idx, 'status'] = 'Matched'
-                                        st.toast("Task status updated to Matched.", icon="🔄")
+                                        st.toast(f"✅ Match Confirmed — {vol} dispatched to {cat} (Urgency {urg}/10)", icon="🚀")
                                         
                                     st.button(f"Confirm & Dispatch", key=f"btn_{original_idx}", on_click=update_status_closure)
                             
