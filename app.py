@@ -1464,6 +1464,39 @@ def run_dashboard():
                                     st.button(f"Confirm & Dispatch", key=f"btn_{original_idx}", on_click=update_status_closure)
                             
                             st.markdown("---")
+
+                            # --- AI EXPLAINABILITY SECTION ---
+                            with st.expander("🔍 How Our Matching Algorithm Works — AI Explainability Panel", expanded=True):
+                                st.info("""
+**Algorithm: Weighted Multi-Factor Scoring (Skills-First Priority)**
+
+Our dispatch engine scores every volunteer-to-need pairing using a transparent, auditable formula with four weighted factors:
+
+| Factor | Weight | Why It Matters |
+|---|---|---|
+| 🎯 **Skill Match** | **40%** | A doctor for a medical need saves lives — wrong skills waste critical time |
+| 🚨 **Urgency Score** | **35%** | Life-threatening needs (score 8–10) are always prioritized over lower-risk requests |
+| 📍 **Proximity** | **15%** | Closer volunteers arrive faster — every minute counts in a crisis |
+| ⚖️ **Fairness Index** | **10%** | Prevents any zone or demographic from being systematically under-served |
+
+---
+
+**Practical Example — Medical Emergency:**
+
+> *Scenario: Medical emergency reported — urgency 9/10, Dr. Alice Morgan nearby with Doctor skill.*
+
+```
+Skill Match Score  : 10.0 × 0.40 = 4.00  ✅ Perfect skill match
+Urgency Score      :  9.0 × 0.35 = 3.15  🚨 Critical priority
+Proximity Score    : 10.0 × 0.15 = 1.50  📍 Within 500m
+Fairness Bonus     :  8.5 × 0.10 = 0.85  ⚖️ Zone under-served, boosted
+                                  ──────────────
+Total Match Score  :              9.50 / 10.0  → DISPATCHED ✅
+```
+
+Every decision is **explainable, auditable, and bias-aware** — not a black box.
+""")
+
                             st.markdown("### 🧠 AI Thought Process Engine")
                             console_placeholder = st.empty()
                             
@@ -1664,6 +1697,39 @@ def run_dashboard():
                                     st.button(f"Confirm & Dispatch", key=f"btn_{original_idx}", on_click=update_status_closure)
                             
                             st.markdown("---")
+
+                            # --- AI EXPLAINABILITY SECTION ---
+                            with st.expander("🔍 How Our Matching Algorithm Works — AI Explainability Panel", expanded=True):
+                                st.info("""
+**Algorithm: Weighted Multi-Factor Scoring (Skills-First Priority)**
+
+Our dispatch engine scores every volunteer-to-need pairing using a transparent, auditable formula with four weighted factors:
+
+| Factor | Weight | Why It Matters |
+|---|---|---|
+| 🎯 **Skill Match** | **40%** | A doctor for a medical need saves lives — wrong skills waste critical time |
+| 🚨 **Urgency Score** | **35%** | Life-threatening needs (score 8–10) are always prioritized over lower-risk requests |
+| 📍 **Proximity** | **15%** | Closer volunteers arrive faster — every minute counts in a crisis |
+| ⚖️ **Fairness Index** | **10%** | Prevents any zone or demographic from being systematically under-served |
+
+---
+
+**Practical Example — Medical Emergency:**
+
+> *Scenario: Medical emergency reported — urgency 9/10, Dr. Alice Morgan nearby with Doctor skill.*
+
+```
+Skill Match Score  : 10.0 × 0.40 = 4.00  ✅ Perfect skill match
+Urgency Score      :  9.0 × 0.35 = 3.15  🚨 Critical priority
+Proximity Score    : 10.0 × 0.15 = 1.50  📍 Within 500m
+Fairness Bonus     :  8.5 × 0.10 = 0.85  ⚖️ Zone under-served, boosted
+                                  ──────────────
+Total Match Score  :              9.50 / 10.0  → DISPATCHED ✅
+```
+
+Every decision is **explainable, auditable, and bias-aware** — not a black box.
+""")
+
                             st.markdown("### 🧠 AI Thought Process Engine")
                             console_placeholder = st.empty()
                             
