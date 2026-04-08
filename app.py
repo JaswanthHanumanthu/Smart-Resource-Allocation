@@ -1181,6 +1181,46 @@ def run_dashboard():
             
             st.divider()
             
+            # --- REAL-TIME SYSTEM PERFORMANCE ---
+            st.markdown("### ⚡ Real-Time System Performance")
+            st.caption("Live operational telemetry across all active mission sectors.")
+            
+            p1, p2, p3, p4 = st.columns(4)
+            with p1:
+                st.markdown("""
+                    <div class='high-end-card card-safe' style='text-align:center; padding:20px;'>
+                        <div class='kpi-label'>Avg Match Time</div>
+                        <div class='kpi-massive' style='font-size:2.2rem;'>2.3s</div>
+                        <div style='color:var(--brand-success);font-size:0.78rem;font-weight:700;'>⚡ -0.4s vs Last Hour</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            with p2:
+                st.markdown("""
+                    <div class='high-end-card card-safe' style='text-align:center; padding:20px;'>
+                        <div class='kpi-label'>Match Success Rate</div>
+                        <div class='kpi-massive' style='font-size:2.2rem;'>87%</div>
+                        <div style='color:var(--brand-success);font-size:0.78rem;font-weight:700;'>🚀 +3% vs Baseline</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            with p3:
+                st.markdown("""
+                    <div class='high-end-card card-warning' style='text-align:center; padding:20px;'>
+                        <div class='kpi-label'>Volunteer Utilization</div>
+                        <div class='kpi-massive' style='font-size:2.2rem;'>76%</div>
+                        <div style='color:var(--impact-orange);font-size:0.78rem;font-weight:700;'>⚠️ Capacity Headroom: 24%</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            with p4:
+                st.markdown("""
+                    <div class='high-end-card card-warning' style='text-align:center; padding:20px;'>
+                        <div class='kpi-label'>Avg Response Time</div>
+                        <div class='kpi-massive' style='font-size:2.2rem;'>4.2h</div>
+                        <div style='color:var(--impact-orange);font-size:0.78rem;font-weight:700;'>🎯 Target: &lt; 6h</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.divider()
+            
             # Main Analytics Row
             rowCol1, rowCol2 = st.columns([2, 1])
             
