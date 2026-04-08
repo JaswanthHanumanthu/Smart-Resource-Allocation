@@ -1313,6 +1313,18 @@ def run_dashboard():
                             )
                         st.success("Report successfully compiled and ready for dispatch.")
 
+            st.divider()
+
+            # --- ETHICAL AI & FAIRNESS AUDIT ---
+            st.markdown("### ⚖️ Ethical AI & Fairness Audit")
+            st.caption(
+                "This audit ensures resources are distributed equitably across different geographic zones "
+                "and urgency levels without algorithmic bias. Results are computed in real-time from live mission data."
+            )
+            from src.utils.fairness import generate_fairness_report
+            fairness_report = generate_fairness_report(df)
+            st.json(fairness_report)
+
         
     elif page in ["Volunteer Matching", "🚨 EMERGENCY DISPATCH 🚨"]:
         st.subheader("🤝 Smart Volunteer Matching & XUX Portal")
