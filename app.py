@@ -1053,6 +1053,14 @@ def run_dashboard():
         
         df = st.session_state.get('needs_df', pd.DataFrame())
             
+        if df.empty or "latitude" not in df.columns or "longitude" not in df.columns:
+            st.info("📂 Upload a mission report to populate the map with live resource pins. Showing India overview by default.")
+            import folium as _folium
+            from streamlit_folium import st_folium as _st_folium
+            _m = _folium.Map(location=[20.5937, 78.9629], zoom_start=5, tiles='cartodbpositron',
+                             attr='© CartoDB | © OpenStreetMap')
+            _st_folium(_m, width=900, height=400, returned_objects=[])
+
         if not df.empty and "latitude" in df.columns and "longitude" in df.columns:
             st.markdown("### 🔍 Map Filters & Timeline")
             col1, col2, col3 = st.columns(3)
@@ -1089,6 +1097,16 @@ def run_dashboard():
             if filtered_df.empty:
                 st.warning("No active markers map to these filters!")
             else:
+                # --- Initialize map: India-First, professional CartoDB tiles ---
+                from folium.plugins import MiniMap
+                india_center = [20.5937, 78.9629]
+                m = folium.Map(
+                    location=india_center,
+                    zoom_start=5,
+                    tiles='cartodbpositron',
+                    attr='© <a href="https://carto.com/">CartoDB</a> | © <a href="https://openstreetmap.org/">OpenStreetMap</a>'
+                )
+
                 # --- 1. Add HeatMap for Need Density (Weighted by Urgency) ---
                 heat_data = [[row['latitude'], row['longitude'], row['urgency']/10.0] for index, row in filtered_df.iterrows()]
                 HeatMap(heat_data, name="Need Density Cluster", radius=20, blur=15, min_opacity=0.4,
@@ -1221,12 +1239,29 @@ def run_dashboard():
                 # Extra Map Features
                 Fullscreen(position='topright', title='Expand Map', title_cancel='Exit Fullscreen', force_separate_button=True).add_to(m)
                 MeasureControl(position='bottomleft', primary_length_unit='kilometers', primary_area_unit='sqmeters').add_to(m)
-                LocateControl(auto_start=False).add_to(m)
-                
+                LocateControl(auto_start=False, position='topright').add_to(m)
+
+                # --- MiniMap: orientation widget in bottom-right corner ---
+                MiniMap(
+                    tile_layer='cartodbpositron',
+                    position='bottomright',
+                    width=160, height=110,
+                    collapsed_width=25, collapsed_height=25,
+                    zoom_animation=True
+                ).add_to(m)
+
                 folium.LayerControl().add_to(m)
-                
+
+                # --- Dynamic Bounds: auto-zoom to cover all active pins ---
+                data_points = [[row['latitude'], row['longitude']] for _, row in filtered_df.iterrows()]
+                if len(data_points) >= 2:
+                    m.fit_bounds(data_points, padding=(30, 30))
+                elif len(data_points) == 1:
+                    m.location = data_points[0]
+                    m.options['zoom'] = 10
+
                 st.markdown("### 🔮 AI Crisis Prediction Zones")
-                st_folium(m, width=900, height=500, returned_objects=[])
+                st_folium(m, width=900, height=520, returned_objects=[])
                 st.info(f"🔮 **AI PREDICTIVE INSIGHT:** System predicts **{len(predictions)}** high-probability crisis zones in the next 4 hours. Purple zones indicate areas at elevated risk based on current cluster patterns.")
     elif page == "Executive Impact Analytics":
         st.subheader("🎯 Executive Urgency & Strategic Index")
