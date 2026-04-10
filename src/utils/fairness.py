@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 
+@st.cache_data
 def calculate_parity_score(needs_df):
     """
     Calculates a 'Parity Score' based on the ratio of Matched vs Pending tasks
@@ -27,6 +29,7 @@ def calculate_parity_score(needs_df):
     parity = (sum(sector_metrix) / len(sector_metrix)) * 100 if sector_metrix else 100
     return round(min(100, parity), 1)
 
+@st.cache_data
 def audit_for_bias(needs_df):
     """
     Analyzes data for under-served high-urgency clusters.

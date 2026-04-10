@@ -79,3 +79,19 @@ def anonymize_report_data(text: str) -> str:
     # Redact common Title + Name structures (Simple NGO Prototype)
     text = re.sub(r'(Mr\.|Mrs\.|Ms\.|Dr\.)\s[A-Z][a-z]+', '[NAME REDACTED]', text)
     return text
+
+def mask_name(name: str) -> str:
+    """
+    Masks identity for the public dashboard (e.g., 'Alice' -> 'A***').
+    """
+    if not name: return ""
+    parts = name.split()
+    masked = []
+    for p in parts:
+        if p.endswith('.'):
+            masked.append(p)
+        elif len(p) > 1:
+            masked.append(p[0] + "***")
+        else:
+            masked.append(p)
+    return " ".join(masked)

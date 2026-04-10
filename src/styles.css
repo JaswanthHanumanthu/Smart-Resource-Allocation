@@ -1,272 +1,377 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
 
-/* --- Theme-Agnostic Foundation --- */
+/* ======================================================
+   MISSION-CRITICAL DESIGN SYSTEM v3.0
+   Smart Resource Allocator — Enterprise Grade
+   ====================================================== */
+
+/* --- Token Foundation --- */
 :root {
-    --brand-primary: #4285F4; /* Google Blue */
+    --brand-primary: #4285F4;
     --brand-glow: rgba(66, 133, 244, 0.4);
-    --brand-success: #34A853; /* NGO Green */
-    
-    /* Premium Light Mode (Default) */
-    --surface-elevation-1: #F9FAFB; /* Soft Off-White Background */
-    --surface-elevation-2: #FFFFFF; /* Pure White Elevated Cards */
-    --border-subtle: #E5E7EB; /* Faint Grey Border */
-    --text-high-contrast: #0F172A; /* Slate-900 Header */
-    --text-medium-contrast: #64748B; /* Slate-500 Body */
-    
+    --brand-success: #34A853;
+
+    /* Light Mode Surfaces */
+    --surface-elevation-1: #F0F4FF;
+    --surface-elevation-2: #FFFFFF;
+    --border-subtle: #D1D9F0;
+    --text-high-contrast: #0F172A;
+    --text-medium-contrast: #475569;
+
     /* Okabe-Ito Accessible Impact Palette */
-    --impact-red: #D55E00; /* Vermillion */
-    --impact-orange: #E69F00; /* Orange */
-    --impact-green: #009E73; /* Bluish Green */
-    
-    --radius-standard: 16px;
-    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    
-    /* Neon Glows (Color-blind Safe Okabe-Ito 기반) */
-    --glow-red: 0 0 15px rgba(213, 94, 0, 0.4);
-    --glow-orange: 0 0 15px rgba(230, 159, 0, 0.4);
-    --glow-green: 0 0 15px rgba(0, 158, 115, 0.4);
-    
-    /* Glassmorphism Defaults */
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --glass-blur: 12px;
+    --impact-red: #D55E00;
+    --impact-orange: #E69F00;
+    --impact-green: #009E73;
+
+    --radius-standard: 18px;
+    --radius-sm: 10px;
+    --shadow-soft: 0 4px 24px rgba(66, 133, 244, 0.08), 0 1px 4px rgba(0,0,0,0.04);
+    --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.18);
+
+    /* Glow Tokens */
+    --glow-red: 0 0 20px rgba(213, 94, 0, 0.45);
+    --glow-orange: 0 0 20px rgba(230, 159, 0, 0.45);
+    --glow-green: 0 0 20px rgba(0, 158, 115, 0.45);
+    --glow-blue: 0 0 20px rgba(66, 133, 244, 0.45);
+
+    /* Glassmorphism Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.35);
+    --glass-blur: 18px;
+    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+
+    /* Crisis Theme (default OFF) */
+    --crisis-bg: transparent;
+    --crisis-border: transparent;
 }
 
-/* --- Dark Mode Detection (Streamlit specific or OS) --- */
+/* --- Dark Mode Overrides --- */
 @media (prefers-color-scheme: dark) {
     :root {
-        --surface-elevation-1: #0f172a; /* Deep Charcoal */
-        --surface-elevation-2: #1e293b;
-        --border-subtle: #334155; /* Dark Slate */
-        --text-high-contrast: #f1f5f9; /* Off-White */
+        --surface-elevation-1: #0b1120;
+        --surface-elevation-2: #131e35;
+        --border-subtle: #1e3050;
+        --text-high-contrast: #f1f5f9;
         --text-medium-contrast: #94a3b8;
-        --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-        --glass-bg: rgba(15, 23, 42, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.05);
+        --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0,0,0,0.3);
+        --glass-bg: rgba(11, 17, 32, 0.72);
+        --glass-border: rgba(255, 255, 255, 0.06);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 }
 
-/* Alternative: Streamlit's internal theme detection (optional but helpful) */
-[data-theme="dark"] {
-    --surface-elevation-1: #0f172a;
-    --surface-elevation-2: #1e293b;
-    --border-subtle: #334155;
-    --text-high-contrast: #f1f5f9;
-    --text-medium-contrast: #94a3b8;
+/* ======================================================
+   HIGH-CRISIS MODE  — Applied dynamically via class on body
+   ====================================================== */
+.high-crisis-mode [data-testid="stAppViewContainer"] {
+    border: 3px solid rgba(213, 94, 0, 0.7) !important;
+    box-shadow: inset 0 0 60px rgba(213, 94, 0, 0.08) !important;
+    animation: crisis-pulse-bg 2s infinite !important;
 }
 
-/* --- Global Resets & Typography --- */
-html, body, [data-testid="stAppViewContainer"] {
+@keyframes crisis-pulse-bg {
+    0%, 100% { background-color: var(--surface-elevation-1); }
+    50% { background-color: rgba(213, 94, 0, 0.04); }
+}
+
+/* ======================================================
+   GLOBAL RESETS & TYPOGRAPHY
+   ====================================================== */
+html, body, [data-testid="stAppViewContainer"], .stApp {
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-    font-size: 16px !important;
-    line-height: 1.6 !important;
-    background-color: var(--surface-elevation-1) !important;
-    color: var(--text-medium-contrast) !important;
-    animation: fade-in 1s ease-out;
+    background: radial-gradient(circle at 20% 30%, #1e293b 0%, #0f172a 50%, #000000 100%) !important;
+    background-attachment: fixed !important;
+    color: #f8fafc !important;
 }
 
-@keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-h1, h2, h3, h4, h5, h6, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', sans-serif !important;
     color: var(--text-high-contrast) !important;
     font-weight: 800 !important;
-    letter-spacing: -0.025em !important;
+    letter-spacing: -0.03em !important;
 }
 
-/* --- Surface Elevation & Card Styling --- */
-div[data-testid="stMetric"], 
-div[data-testid="stVerticalBlock"] > div[style*="border"], 
-.stDataFrame, 
-.stTable, 
-.element-container div.stMarkdown div[data-testid="stMarkdownContainer"] > div[style*="border"] {
-    border-radius: var(--radius-standard) !important;
-    border: 1px solid var(--border-subtle) !important;
-    background-color: var(--surface-elevation-2) !important;
-    padding: 1rem !important;
-    box-shadow: var(--shadow-soft) !important;
-}
-
-/* Custom Card Class (Usage: wrap in a div) */
+/* ======================================================
+   CARD SYSTEM
+   ====================================================== */
 .high-end-card {
-    background-color: var(--surface-elevation-2);
-    border: 1px solid var(--border-subtle);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-standard);
     padding: 1.5rem;
-    box-shadow: var(--shadow-soft);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--glass-shadow);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: 1rem;
-    animation: fade-in 0.8s ease-out backwards;
 }
-
-.card-critical { border-color: var(--impact-red) !important; box-shadow: var(--glow-red) !important; }
-.card-warning { border-color: var(--impact-orange) !important; box-shadow: var(--glow-orange) !important; }
-.card-safe { border-color: var(--impact-green) !important; box-shadow: var(--glow-green) !important; }
 
 .high-end-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    transform: translateY(-5px) scale(1.005);
+    box-shadow: 0 24px 48px -8px rgba(66, 133, 244, 0.18), var(--glass-shadow) !important;
+    border-color: var(--brand-primary) !important;
 }
 
-/* --- Impact Palette Enhancements --- */
-.impact-red { color: var(--impact-red); border: 1px solid var(--impact-red); }
-.impact-orange { color: var(--impact-orange); border: 1px solid var(--impact-orange); }
-.impact-green { color: var(--impact-green); border: 1px solid var(--impact-green); }
-
-/* Glow Effects for Dark Mode */
-@media (prefers-color-scheme: dark) {
-    .impact-red { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4)); }
-    .impact-orange { filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4)); }
-    .impact-green { filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4)); }
+/* ======================================================
+   COMPETITION-GRADE NAVIGATION CARDS 
+   ====================================================== */
+.nav-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 0;
 }
 
-/* Border Effects for Light Mode */
-@media (prefers-color-scheme: light) {
-    .impact-red { border: 1.5px solid var(--impact-red); padding: 2px 6px; border-radius: 4px; }
-    .impact-orange { border: 1.5px solid var(--impact-orange); padding: 2px 6px; border-radius: 4px; }
-    .impact-green { border: 1.5px solid var(--impact-green); padding: 2px 6px; border-radius: 4px; }
+section[data-testid="stSidebar"] .stButton button {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur)) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    height: auto !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    text-align: left !important;
+    box-shadow: var(--glass-shadow) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--text-high-contrast) !important;
+    white-space: pre-wrap !important;
 }
 
-/* --- Primary Brand Color & Buttons --- */
-[data-testid="stMetricValue"] {
-    font-size: 1.8rem !important;
+section[data-testid="stSidebar"] .stButton button p {
+    font-size: 0.9rem !important;
     font-weight: 700 !important;
-    color: var(--text-high-contrast) !important;
-    letter-spacing: -1px !important;
-}
-
-.stButton > button {
-    background-color: var(--brand-primary) !important;
-    color: #ffffff !important;
-    border-radius: 8px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    padding: 10px 24px !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    transition: all 0.3s ease !important;
-    text-transform: none !important;
-    letter-spacing: 0.01em !important;
-}
-
-@media (prefers-color-scheme: dark) {
-    .stButton > button {
-        box-shadow: 0 4px 6px -1px var(--brand-glow), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    }
-}
-
-.stButton > button:hover {
-    background-color: #3367D6 !important; /* Darker Google Blue */
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
-}
-
-@media (prefers-color-scheme: dark) {
-    .stButton > button:hover {
-        box-shadow: 0 4px 12px var(--brand-glow) !important;
-    }
-}
-
-.stButton > button:active {
-    transform: translateY(0);
-}
-
-/* --- KPI Styling --- */
-.kpi-massive {
-    font-size: 3.5rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -3px !important;
-    color: var(--text-high-contrast) !important;
     margin: 0 !important;
 }
 
-.kpi-label {
-    font-size: 0.75rem !important;
-    color: var(--text-medium-contrast) !important;
-    text-transform: uppercase !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.1em !important;
-    margin-bottom: -0.5rem !important;
+section[data-testid="stSidebar"] .stButton button:hover {
+    transform: scale(1.05) translateY(-2px) !important;
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    box-shadow: 0 10px 25px rgba(66, 133, 244, 0.4) !important;
 }
 
-/* --- Light Mode Contrast Overrides (AAA Accessibility) --- */
-@media (prefers-color-scheme: light) {
-    [data-testid="stAppViewContainer"] {
-        color: #1E293B !important;
-    }
-    .stMarkdown, .stSubheader, .stHeader, h1, h2, h3, h4, h5, h6 {
-        color: #1E293B !important;
-    }
-    [data-testid="stMetricValue"] {
-        color: #1E293B !important;
-    }
+section[data-testid="stSidebar"] .stButton button:hover * {
+    color: white !important;
 }
 
-/* --- Situational Mission Animations --- */
-@keyframes pulse-urgent {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-@keyframes glow-stable {
-    0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
-    50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
-    100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
-}
-
-.card-critical {
-    animation: pulse-urgent 2s infinite !important;
+.nav-selected button {
     border: 2px solid var(--impact-red) !important;
+    box-shadow: 0 0 15px rgba(213, 94, 0, 0.6) !important;
 }
 
-.card-safe {
-    animation: glow-stable 3s infinite !important;
-    border: 1px solid var(--impact-green) !important;
+/* ======================================================
+   BREADCRUMBS
+   ====================================================== */
+.breadcrumb-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
-/* --- Static Mission Footer --- */
+.breadcrumb-path {
+    color: var(--text-medium-contrast);
+    opacity: 0.6;
+}
+
+.breadcrumb-separator {
+    color: var(--text-medium-contrast);
+    opacity: 0.3;
+}
+
+.breadcrumb-active {
+    color: var(--brand-primary);
+    background: var(--brand-glow);
+    padding: 2px 10px;
+    border-radius: 6px;
+}
+
+/* ======================================================
+   STATIC MISSION FOOTER
+   ====================================================== */
 .static-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: var(--surface-elevation-1);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: var(--text-medium-contrast);
     text-align: center;
     padding: 12px 0;
-    font-size: 0.72rem;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.05em;
-    border-top: 1px solid var(--border-subtle);
+    font-size: 0.7rem;
+    border-top: 1px solid var(--glass-border);
     z-index: 1000;
-    backdrop-filter: blur(8px);
 }
 
-[data-testid="stAppViewContainer"] {
-    padding-bottom: 100px !important;
+/* ======================================================
+   URGENT ALERT BANNER
+   ====================================================== */
+.urgent-pinned-banner {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: linear-gradient(135deg, rgba(213,94,0,0.95) 0%, rgba(180,40,0,0.95) 100%);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,140,80,0.7);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    margin-bottom: 18px;
+    color: #fff !important;
+    box-shadow: 0 4px 32px rgba(213,94,0,0.45);
+}
+/* --- CRISIS SIMULATION ANIMATIONS --- */
+@keyframes pulse-red-glow {
+    0% { box-shadow: 0 0 5px rgba(234, 67, 53, 0.4); border-color: rgba(234, 67, 53, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(234, 67, 53, 0.8); border-color: #EA4335; transform: translateY(-2px); }
+    100% { box-shadow: 0 0 5px rgba(234, 67, 53, 0.4); border-color: rgba(234, 67, 53, 0.5); }
 }
 
-[data-testid="stHeader"] {
-    background-color: rgba(255, 255, 255, 0) !important;
-    backdrop-filter: blur(5px);
+.kpi-card-pulse-red {
+    animation: pulse-red-glow 1.5s infinite ease-in-out;
+    background: rgba(234, 67, 53, 0.1) !important;
+    border: 1px solid #EA4335 !important;
 }
 
-/* Ensure Chart Containers are Transparent */
-div[data-testid="stPlotlyChart"], div.stFoliumContainer {
-    background-color: transparent !important;
-    border: none !important;
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { 
-    background: var(--border-subtle); 
-    border-radius: 10px; 
-    border: 2px solid transparent;
-    background-clip: content-box;
+.epicenter-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(234, 67, 53, 0.05) 1px, rgba(234, 67, 53, 0.05) 2px);
+    pointer-events: none;
+    z-index: 10;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--text-medium-contrast); }
+
+/* --- FIELD MODE (HIGH CONTRAST) --- */
+.field-mode {
+    --surface-elevation-1: #FFFFFF !important;
+    --surface-elevation-2: #F0F0F0 !important;
+    --text-high-contrast: #000000 !important;
+    --text-medium-contrast: #222222 !important;
+    --border-subtle: #000000 !important;
+    --brand-primary: #000000 !important;
+}
+
+.field-mode .stApp, .field-mode [data-testid=" stAppViewContainer\] {
+ background: #FFFFFF !important;
+ filter: none !important;
+ color: #000000 !important;
+}
+
+.field-mode .high-end-card {
+ background: #FFFFFF !important;
+ border: 2px solid #000000 !important;
+ box-shadow: none !important;
+ color: #000000 !important;
+}
+
+.field-mode h1, .field-mode h2, .field-mode h3, .field-mode .kpi-value {
+ color: #000000 !important;
+}
+
+/* --- PERFORMANCE OPTIMIZATION (JUDGING TIER) --- */
+* { transition: none !important; } /* Global transition disable to save cycles */
+.high-end-card, button, .stButton>button, .nav-item { transition: all 0.2s ease !important; } /* Only interactive elements get transitions */
+
+@keyframes shimmer {
+    0% { background-position: -468px 0; }
+    100% { background-position: 468px 0; }
+}
+
+.skeleton-loader {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    display: inline-block;
+    position: relative;
+    animation: shimmer 1s linear infinite forwards;
+}
+
+@media (prefers-color-scheme: dark) {
+    .skeleton-loader {
+        background: #1e293b;
+        background-image: linear-gradient(to right, #1e293b 0%, #334155 20%, #1e293b 40%, #1e293b 100%);
+    }
+}
+
+/* --- MEANINGFUL MOTION (STAGGERED SLIDE-IN) --- */
+@keyframes slide-up-fade {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.stagger-1 { animation: slide-up-fade 0.5s ease-out forwards; opacity: 0; }
+.stagger-2 { animation: slide-up-fade 0.5s ease-out forwards 0.1s; opacity: 0; }
+.stagger-3 { animation: slide-up-fade 0.5s ease-out forwards 0.2s; opacity: 0; }
+
+/* Redefining Pulse for Subtle Glow if > 0 */
+.kpi-pulse-subtle {
+    animation: pulse-subtle-red 2s infinite ease-in-out;
+}
+
+@keyframes pulse-subtle-red {
+    0%, 100% { box-shadow: 0 0 10px rgba(234, 67, 53, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(234, 67, 53, 0.5); }
+}
+
+/* --- STANDALONE PRODUCT CLEANUP --- */
+#MainMenu { visibility: hidden; } /* Hide Hamburger */
+footer { visibility: hidden; } /* Hide Streamlit Footer */
+header { visibility: hidden; } /* Hide Streamlit Header */
+div[data-testid=" stSidebarCollapseButton\] { display: none !important; } /* Hide Sidebar Arrow */
+
+/* Lock Sidebar Width and Style */
+section[data-testid=\stSidebar\] {
+ min-width: 320px !important;
+ max-width: 320px !important;
+}
+
+/* --- LIGHT MODE (APPLE-STYLE MINIMALIST) --- */
+.light-mode-theme {
+    --surface-elevation-1: #FAFAFA !important;
+    --surface-elevation-2: #FFFFFF !important;
+    --text-high-contrast: #1D1D1F !important;
+    --text-medium-contrast: #86868B !important;
+    --border-subtle: #E5E5E7 !important;
+    --brand-primary: #0066CC !important;
+    --glass-bg: rgba(255, 255, 255, 0.8) !important;
+    --glass-border: rgba(0, 0, 0, 0.1) !important;
+    --glass-blur: 20px !important;
+}
+
+.light-mode-theme .stApp, .light-mode-theme [data-testid=" stAppViewContainer\] {
+ background: #FFFFFF !important;
+ color: #1D1D1F !important;
+}
+
+.light-mode-theme .high-end-card {
+ background: #FFFFFF !important;
+ border: 1px solid #E5E5E7 !important;
+ box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04) !important;
+ color: #1D1D1F !important;
+}
+
+.light-mode-theme h1, .light-mode-theme h2, .light-mode-theme h3 {
+ color: #1D1D1F !important;
+ background: none !important;
+ -webkit-text-fill-color: #1D1D1F !important;
+}
+
+.light-mode-theme .kpi-massive {
+ color: #0066CC !important;
+}

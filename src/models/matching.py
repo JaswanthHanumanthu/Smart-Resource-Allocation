@@ -39,10 +39,11 @@ def match_volunteer_to_needs(volunteer: dict, needs_df: pd.DataFrame, top_n: int
     df["skill_score"] = df["category"].apply(lambda cat: rank_skill(cat, volunteer["skills"]))
     
     # 2. Tactical Proximity (5km Optimized)
-    df["distance_km"] = df.apply(
-        lambda row: calculate_distance(volunteer["latitude"], volunteer["longitude"], row["latitude"], row["longitude"]) * 111.0, 
+    df["distance"] = df.apply(
+        lambda row: calculate_distance(volunteer["latitude"], volunteer["longitude"], row["latitude"], row["longitude"]), 
         axis=1
     )
+    df["distance_km"] = df["distance"] * 111.0
     
     # 5km Radius Logic: High priority inside, heavy decay outside
     def score_proximity(dist):
